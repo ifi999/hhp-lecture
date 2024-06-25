@@ -6,6 +6,8 @@ import com.hhp.lecture.infra.entity.LectureEntity;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public class LectureJpaAdapter implements LectureRepository {
 
@@ -20,15 +22,44 @@ public class LectureJpaAdapter implements LectureRepository {
         final LectureEntity lectureEntity = lectureJpaRepository.findById(lectureId)
             .orElseThrow(() -> new EntityNotFoundException("Lecture not found. Lecture ID: " + lectureId));
 
-        return new Lecture(lectureEntity.getId(), lectureEntity.getLectureName(), lectureEntity.getAppliedCount());
+        return new Lecture(
+            lectureEntity.getId(),
+            lectureEntity.getLectureName(),
+            lectureEntity.getApplyDate(),
+            lectureEntity.getOpenDate(),
+            lectureEntity.getAppliedCount()
+        );
     }
 
     @Override
     public void updateLecture(final Lecture lecture) {
         lecture.incrementAppliedCount();
 
-        final LectureEntity lectureEntity = new LectureEntity(lecture.getId(), lecture.getLectureName(), lecture.getAppliedCount());
+        final LectureEntity lectureEntity = new LectureEntity(
+            lecture.getId(),
+            lecture.getLectureName(),
+            lecture.getApplyDate(),
+            lecture.getOpenDate(),
+            lecture.getAppliedCount()
+        );
         lectureJpaRepository.save(lectureEntity);
+    }
+
+    @Override
+    public List<Lecture> getLectures() {
+        final List<LectureEntity> lectureEntities = lectureJpaRepository.findAll();
+
+        return lectureEntities.stream()
+            .map(o ->
+                new Lecture(
+                    o.getId(),
+                    o.getLectureName(),
+                    o.getApplyDate(),
+                    o.getOpenDate(),
+                    o.getAppliedCount()
+                )
+            )
+            .toList();
     }
 
 }

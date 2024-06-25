@@ -1,7 +1,6 @@
 package com.hhp.lecture.application;
 
 import com.hhp.lecture.domain.*;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -32,8 +32,14 @@ class UserLectureServiceTest {
     @Mock
     private UserLectureRepository userLectureRepository;
 
+    @Mock
+    private DateTimeProvider dateTimeProvider;
+
     @InjectMocks
     private UserLectureService userLectureService;
+
+    private static final LocalDateTime LECTURE_APPLY_DATE = LocalDateTime.of(2024, 4, 20, 13, 20);
+    private static final LocalDateTime LECTURE_OPEN_DATE = LocalDateTime.of(2024, 4, 23, 13, 20);
 
     /**
      * 특강 신청 성공 테스트
@@ -49,15 +55,24 @@ class UserLectureServiceTest {
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
         given(lectureRepository.getLectureByLectureId(강의_ID))
-            .willReturn(new Lecture(456L, "토요일 특강", 0));
+            .willReturn(new Lecture(
+                456L,
+                "토요일 특강",
+                LECTURE_APPLY_DATE,
+                LECTURE_OPEN_DATE,
+                0)
+            );
+        given(dateTimeProvider.now())
+            .willReturn(신청시간);
 
         // when
-        UserLecture 유저_강의 = userLectureService.applyLecture(특강신청_요청, 신청시간);
+        UserLecture 유저_강의 = userLectureService.applyLecture(특강신청_요청);
 
         // then
         assertThat(유저_강의.getUserId()).isEqualTo(123L);
         assertThat(유저_강의.getLectureId()).isEqualTo(456L);
         assertThat(유저_강의.getLectureName()).isEqualTo("토요일 특강");
+        assertThat(유저_강의.getOpenDate()).isEqualTo("2024-04-23T13:20:00");
         assertThat(유저_강의.isEnrolled()).isTrue();
     }
 
@@ -75,15 +90,24 @@ class UserLectureServiceTest {
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
         given(lectureRepository.getLectureByLectureId(강의_ID))
-            .willReturn(new Lecture(456L, "토요일 특강", 30));
+            .willReturn(new Lecture(
+                456L,
+                "토요일 특강",
+                LECTURE_APPLY_DATE,
+                LECTURE_OPEN_DATE,
+                30)
+            );
+        given(dateTimeProvider.now())
+            .willReturn(신청시간);
 
         // when
-        UserLecture 유저_강의 = userLectureService.applyLecture(특강신청_요청, 신청시간);
+        UserLecture 유저_강의 = userLectureService.applyLecture(특강신청_요청);
 
         // then
         assertThat(유저_강의.getUserId()).isEqualTo(123L);
         assertThat(유저_강의.getLectureId()).isEqualTo(456L);
         assertThat(유저_강의.getLectureName()).isEqualTo("토요일 특강");
+        assertThat(유저_강의.getOpenDate()).isEqualTo("2024-04-23T13:20:00");
         assertThat(유저_강의.isEnrolled()).isFalse();
     }
 
@@ -101,10 +125,18 @@ class UserLectureServiceTest {
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
         given(lectureRepository.getLectureByLectureId(강의_ID))
-            .willReturn(new Lecture(456L, "토요일 특강", 0));
+            .willReturn(new Lecture(
+                456L,
+                "토요일 특강",
+                LECTURE_APPLY_DATE,
+                LECTURE_OPEN_DATE,
+                0)
+            );
+        given(dateTimeProvider.now())
+            .willReturn(신청시간);
 
         // when
-        userLectureService.applyLecture(특강신청_요청, 신청시간);
+        userLectureService.applyLecture(특강신청_요청);
 
         // then
         verify(applyHistoryRepository, times(1))
@@ -122,20 +154,61 @@ class UserLectureServiceTest {
         // given
         final long 유저_ID = 123L;
         final long 강의_ID = 456L;
-        final LocalDateTime 신청시간 = LocalDateTime.of(2024, 4, 20, 13, 00);
+        final LocalDateTime 신청시간 = LocalDateTime.of(2024, 4, 20, 13, 0);
         final UserLecture 특강신청_요청 = new UserLecture(유저_ID, 강의_ID);
 
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
         given(lectureRepository.getLectureByLectureId(강의_ID))
-            .willReturn(new Lecture(456L, "토요일 특강", 0));
+            .willReturn(new Lecture(
+                456L,
+                "토요일 특강",
+                LECTURE_APPLY_DATE,
+                LECTURE_OPEN_DATE,
+                0)
+            );
+        given(dateTimeProvider.now())
+            .willReturn(신청시간);
 
         // when
 
         // then
-        assertThatThrownBy(() -> userLectureService.applyLecture(특강신청_요청, 신청시간))
+        assertThatThrownBy(() -> userLectureService.applyLecture(특강신청_요청))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Invalid application date: 2024-04-20T13:00. Application date must be before 2024-04-20T13:20.");
+    }
+
+    @Test
+    void 특강_목록을_조회한다() {
+        // given
+        given(lectureRepository.getLectures())
+            .willReturn(List.of(new Lecture(
+                1L,
+                "토요일 특강",
+                LECTURE_APPLY_DATE,
+                LECTURE_OPEN_DATE,
+                0))
+            );
+
+        // when
+        final List<Lecture> 특강_목록 = userLectureService.getLectures();
+
+        // then
+        assertThat(특강_목록.size()).isEqualTo(1L);
+        assertThat(특강_목록.get(0).getLectureName()).isEqualTo("토요일 특강");
+        assertThat(특강_목록.get(0).getOpenDate()).isEqualTo("2024-04-23T13:20:00");
+        assertThat(특강_목록.get(0).getAppliedCount()).isEqualTo(0);
+    }
+
+    @Test
+    void 특강_목록_조회_시_강의가_없으면_빈_목록을_반환한다() {
+        // given
+
+        // when
+        final List<Lecture> 특강_목록 = userLectureService.getLectures();
+
+        // then
+        assertThat(특강_목록.size()).isEqualTo(0);
     }
 
 }

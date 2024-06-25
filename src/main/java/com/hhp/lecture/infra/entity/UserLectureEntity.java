@@ -1,9 +1,10 @@
 package com.hhp.lecture.infra.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 @ToString
 @Getter
@@ -23,19 +24,15 @@ public class UserLectureEntity {
     @JoinColumn(name = "lecture_id")
     private LectureEntity lecture;
 
+    private LocalDateTime createdDate;
+
     protected UserLectureEntity() {
     }
 
-    @Builder
-    public UserLectureEntity(final Long id, final UserEntity user, final LectureEntity lecture) {
-        this.id = id;
+    public UserLectureEntity(final UserEntity user, final LectureEntity lecture, final LocalDateTime appliedDate) {
         this.user = user;
         this.lecture = lecture;
-    }
-
-    public UserLectureEntity(final UserEntity user, final LectureEntity lecture) {
-        this.user = user;
-        this.lecture = lecture;
+        this.createdDate = appliedDate;
 
         if (user != null && !user.getUserLectures().contains(this)) {
             user.getUserLectures().add(this);

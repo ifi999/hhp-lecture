@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class LectureEntity {
 
     private String lectureName;
 
+    private LocalDateTime applyDate;
+
+    private LocalDateTime openDate;
+
     private int appliedCount;
 
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -27,14 +32,29 @@ public class LectureEntity {
     protected LectureEntity() {
     }
 
-    public LectureEntity(final long id, final String lectureName, final int appliedCount) {
+    public LectureEntity(
+        final long id,
+        final String lectureName,
+        final LocalDateTime applyDate,
+        final LocalDateTime openDate,
+        final int appliedCount
+    ) {
         this.id = id;
         this.lectureName = lectureName;
+        this.applyDate = applyDate;
+        this.openDate = openDate;
         this.appliedCount = appliedCount;
     }
 
-    public LectureEntity(final String lectureName, final int appliedCount) {
+    public LectureEntity(
+        final String lectureName,
+        final LocalDateTime applyDate,
+        final LocalDateTime openDate,
+        final int appliedCount
+    ) {
         this.lectureName = lectureName;
+        this.applyDate = applyDate;
+        this.openDate = openDate;
         this.appliedCount = appliedCount;
     }
 
