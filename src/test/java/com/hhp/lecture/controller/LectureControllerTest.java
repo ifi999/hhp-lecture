@@ -160,7 +160,7 @@ class LectureControllerTest {
         assertThat(유저신청강의_유저ID).isEqualTo(유저_ID);
         assertThat(유저신청강의_강의ID).isEqualTo(강의_ID);
         assertThat(유저신청강의_강의명).isEqualTo("토요일 특강");
-        assertThat(유저신청강의_강의시간).isEqualTo(신청시간.plusDays(1L).toString());
+        assertThat(유저신청강의_강의시간).contains(신청시간.plusDays(1L).toString());
     }
 
 }

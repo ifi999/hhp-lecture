@@ -36,8 +36,4 @@ public class Lecture {
         this.appliedCount = appliedCount;
     }
 
-    public void incrementAppliedCount() {
-        this.appliedCount++;
-    }
-
 }

@@ -2,7 +2,6 @@ package com.hhp.lecture.infra.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-@ToString
 @Entity
 @Table(name = "lecture")
 public class LectureEntity {

@@ -12,6 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,7 +61,7 @@ public class UserLectureServiceIntegrationTest {
 
         // then
         final LectureEntity 신청_후_강의 = lectureRepository.findById(강의_ID).orElseThrow();
-        assertThat(신청_후_강의.getId()).isEqualTo(유저_ID);
+        assertThat(신청_후_강의.getId()).isEqualTo(강의_ID);
         assertThat(신청_후_강의.getLectureName()).isEqualTo("토요일 특강");
         assertThat(신청_후_강의.getApplyDate()).isEqualTo("2024-04-20T13:20:00");
         assertThat(신청_후_강의.getOpenDate()).isEqualTo("2024-04-23T13:20:00");
@@ -130,6 +134,41 @@ public class UserLectureServiceIntegrationTest {
         // then
         assertThat(신청_완료_목록.size()).isEqualTo(1);
         assertThat(신청_완료_목록.get(0).getLectureName()).isEqualTo("진행 예정 토요일 특강");
+    }
+
+    @Test
+    void 특강_신청을_30명하면_참가자수는_30이다() throws Exception {
+        // given
+        final LectureEntity 강의 = lectureRepository.save(new LectureEntity(
+            "토요일 특강",
+            LECTURE_APPLY_DATE,
+            LECTURE_OPEN_DATE,
+            0)
+        );
+
+        ExecutorService executorService = Executors.newFixedThreadPool(30);
+        CountDownLatch latch = new CountDownLatch(30);
+
+        for (int i = 0; i < 30; i++) {
+            executorService.submit(() -> {
+                try {
+                    final UserEntity 유저 = userRepository.save(new UserEntity("유저"));
+                    return userLectureService.applyLecture(new UserLecture(유저.getId(), 강의.getId()));
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await(60, TimeUnit.SECONDS);
+
+        // when
+        final LectureEntity 신청_완료_강의 = lectureRepository.findById(강의.getId()).get();
+
+        // then
+        assertThat(신청_완료_강의.getAppliedCount()).isEqualTo(30);
+
+        executorService.shutdown();
     }
 
 }
