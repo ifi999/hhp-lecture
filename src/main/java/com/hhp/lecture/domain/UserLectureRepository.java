@@ -1,11 +1,14 @@
 package com.hhp.lecture.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface UserLectureRepository {
 
-    boolean existsByUserAndLecture(final User user, final Lecture lecture);
+    boolean existsByUserAndLecture(User user, Lecture lecture);
 
-    UserLecture saveUserLecture(final User user, final Lecture lecture, final LocalDateTime appliedDate);
+    UserLecture saveUserLecture(User user, Lecture lecture, LocalDateTime appliedDate);
+
+    List<UserLecture> getAppliedLectures(final User user, final LocalDateTime now);
 
 }

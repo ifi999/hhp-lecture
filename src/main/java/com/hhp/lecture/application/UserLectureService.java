@@ -40,14 +40,14 @@ public class UserLectureService {
 
         final boolean isValidApplication = isApplyLectureValid(now, user, lecture);
         if (!isValidApplication) {
-            return convertToUserLecture(user, lecture, false);
+            return convertToUserLecture(user, lecture);
         }
 
         lectureRepository.updateLecture(lecture);
         applyHistoryRepository.saveApplyHistory(new ApplyHistory(user.getId(), lecture.getId()));
         userLectureRepository.saveUserLecture(user, lecture, now);
 
-        return convertToUserLecture(user, lecture, true);
+        return convertToUserLecture(user, lecture);
     }
 
     private boolean isApplyLectureValid(
@@ -85,16 +85,22 @@ public class UserLectureService {
 
     private UserLecture convertToUserLecture(
         final User user,
-        final Lecture lecture,
-        final boolean isEnrolled
+        final Lecture lecture
     ) {
         return UserLecture.builder()
             .userId(user.getId())
             .lectureId(lecture.getId())
             .lectureName(lecture.getLectureName())
             .openDate(lecture.getOpenDate())
-            .isEnrolled(isEnrolled)
             .build();
     }
 
+    public List<UserLecture> getAppliedLectures(final long userId) {
+        final User user = userRepository.getUserByUserId(userId);
+        final LocalDateTime now = dateTimeProvider.now();
+
+        final List<UserLecture> lectures = userLectureRepository.getAppliedLectures(user, now);
+
+        return lectures;
+    }
 }

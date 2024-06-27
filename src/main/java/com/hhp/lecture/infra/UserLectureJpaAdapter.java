@@ -10,6 +10,7 @@ import com.hhp.lecture.infra.entity.UserLectureEntity;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public class UserLectureJpaAdapter implements UserLectureRepository {
@@ -54,8 +55,23 @@ public class UserLectureJpaAdapter implements UserLectureRepository {
             .lectureId(userLectureEntity.getLecture().getId())
             .lectureName(userLectureEntity.getLecture().getLectureName())
             .openDate(userLectureEntity.getLecture().getOpenDate())
-            .isEnrolled(true)
             .build();
     }
 
+    @Override
+    public List<UserLecture> getAppliedLectures(final User user, final LocalDateTime now) {
+        final UserEntity userEntity = new UserEntity(user.getId(), user.getName());
+
+        final List<UserLectureEntity> userLectureEntities = userLectureJpaRepository.findUpcomingLecturesByUser(userEntity, now);
+
+        return userLectureEntities.stream()
+            .map(o -> UserLecture.builder()
+                    .userId(o.getUser().getId())
+                    .lectureId(o.getLecture().getId())
+                    .lectureName(o.getLecture().getLectureName())
+                    .openDate(o.getLecture().getOpenDate())
+                .build()
+            )
+            .toList();
+    }
 }

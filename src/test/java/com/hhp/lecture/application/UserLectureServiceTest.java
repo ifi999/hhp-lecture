@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -73,7 +74,6 @@ class UserLectureServiceTest {
         assertThat(유저_강의.getLectureId()).isEqualTo(456L);
         assertThat(유저_강의.getLectureName()).isEqualTo("토요일 특강");
         assertThat(유저_강의.getOpenDate()).isEqualTo("2024-04-23T13:20:00");
-        assertThat(유저_강의.isEnrolled()).isTrue();
     }
 
     /**
@@ -108,7 +108,6 @@ class UserLectureServiceTest {
         assertThat(유저_강의.getLectureId()).isEqualTo(456L);
         assertThat(유저_강의.getLectureName()).isEqualTo("토요일 특강");
         assertThat(유저_강의.getOpenDate()).isEqualTo("2024-04-23T13:20:00");
-        assertThat(유저_강의.isEnrolled()).isFalse();
     }
 
     /**
@@ -194,7 +193,7 @@ class UserLectureServiceTest {
         final List<Lecture> 특강_목록 = userLectureService.getLectures();
 
         // then
-        assertThat(특강_목록.size()).isEqualTo(1L);
+        assertThat(특강_목록.size()).isEqualTo(1);
         assertThat(특강_목록.get(0).getLectureName()).isEqualTo("토요일 특강");
         assertThat(특강_목록.get(0).getOpenDate()).isEqualTo("2024-04-23T13:20:00");
         assertThat(특강_목록.get(0).getAppliedCount()).isEqualTo(0);
@@ -209,6 +208,36 @@ class UserLectureServiceTest {
 
         // then
         assertThat(특강_목록.size()).isEqualTo(0);
+    }
+
+    @Test
+    void 특강_신청_완료_여부를_조회한다() {
+        // given
+        final long 유저_ID = 123L;
+        final long 강의_ID = 456L;
+        given(userLectureRepository.getAppliedLectures(any(), any()))
+            .willReturn(List.of(new UserLecture(유저_ID, 강의_ID, "토요일 특강", LECTURE_OPEN_DATE)));
+
+        // when
+        final List<UserLecture> 특강_신청_완료_목록 = userLectureService.getAppliedLectures(유저_ID);
+
+        // then
+        assertThat(특강_신청_완료_목록.size()).isEqualTo(1);
+        assertThat(특강_신청_완료_목록.get(0).getUserId()).isEqualTo(123L);
+        assertThat(특강_신청_완료_목록.get(0).getLectureName()).isEqualTo("토요일 특강");
+        assertThat(특강_신청_완료_목록.get(0).getOpenDate()).isEqualTo("2024-04-23T13:20:00");
+    }
+
+    @Test
+    void 특강_신청을_하지_못했다면_빈_목록을_반환한다() {
+        // given
+        final long 유저_ID = 123L;
+
+        // when
+        final List<UserLecture> 특강_신청_완료_목록 = userLectureService.getAppliedLectures(유저_ID);
+
+        // then
+        assertThat(특강_신청_완료_목록.size()).isEqualTo(0);
     }
 
 }

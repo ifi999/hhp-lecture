@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface LectureRepository {
 
-    Lecture getLectureByLectureId(final long lectureId);
+    Lecture getLectureByLectureId(long lectureId);
 
     void updateLecture(Lecture lecture);
 

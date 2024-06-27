@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @ToString
 @Getter
@@ -41,6 +42,19 @@ public class UserLectureEntity {
         if (lecture != null && !lecture.getUserLectures().contains(this)) {
             lecture.getUserLectures().add(this);
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final UserLectureEntity that = (UserLectureEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

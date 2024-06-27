@@ -7,6 +7,7 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @ToString
@@ -56,6 +57,30 @@ public class LectureEntity {
         this.applyDate = applyDate;
         this.openDate = openDate;
         this.appliedCount = appliedCount;
+    }
+
+    @Override
+    public String toString() {
+        return "LectureEntity{" +
+            "id=" + id +
+            ", lectureName='" + lectureName + '\'' +
+            ", applyDate=" + applyDate +
+            ", openDate=" + openDate +
+            ", appliedCount=" + appliedCount +
+            '}';
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final LectureEntity that = (LectureEntity) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

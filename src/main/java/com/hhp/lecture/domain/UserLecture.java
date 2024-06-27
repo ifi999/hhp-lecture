@@ -15,7 +15,6 @@ public class UserLecture {
     private long lectureId;
     private String lectureName;
     private LocalDateTime openDate;
-    private boolean isEnrolled;
 
     public UserLecture(final long userId, final long lectureId) {
         Assert.isTrue(userId > 0, "The user's ID must be positive.");
@@ -30,8 +29,7 @@ public class UserLecture {
         final long userId,
         final long lectureId,
         final String lectureName,
-        final LocalDateTime openDate,
-        final boolean isEnrolled
+        final LocalDateTime openDate
     ) {
         Assert.isTrue(userId > 0, "The user's ID must be positive.");
         Assert.isTrue(lectureId > 0, "The lecture's ID must be positive.");
@@ -42,7 +40,6 @@ public class UserLecture {
         this.lectureId = lectureId;
         this.lectureName = lectureName;
         this.openDate = openDate;
-        this.isEnrolled = isEnrolled;
     }
 
 }

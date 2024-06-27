@@ -4,16 +4,17 @@ import com.hhp.lecture.domain.UserLecture;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-public class CreateApplyLectureResponse {
+public class GetAppliedLecturesResponse {
 
     private long userId;
     private long lectureId;
     private String lectureName;
     private LocalDateTime openDate;
 
-    public CreateApplyLectureResponse(
+    public GetAppliedLecturesResponse(
         final long userId,
         final long lectureId,
         final String lectureName,
@@ -25,13 +26,15 @@ public class CreateApplyLectureResponse {
         this.openDate = openDate;
     }
 
-    public static CreateApplyLectureResponse from(final UserLecture userLecture){
-        return new CreateApplyLectureResponse(
-            userLecture.getUserId(),
-            userLecture.getLectureId(),
-            userLecture.getLectureName(),
-            userLecture.getOpenDate()
-        );
+    public static List<GetAppliedLecturesResponse> from(List<UserLecture> userLectures) {
+        return userLectures.stream()
+            .map(o -> new GetAppliedLecturesResponse(
+                o.getUserId(),
+                o.getLectureId(),
+                o.getLectureName(),
+                o.getOpenDate()
+            ))
+            .toList();
     }
 
 }

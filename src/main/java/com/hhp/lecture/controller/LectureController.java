@@ -4,6 +4,7 @@ import com.hhp.lecture.application.UserLectureService;
 import com.hhp.lecture.common.ApiResponse;
 import com.hhp.lecture.controller.dto.CreateApplyLectureRequest;
 import com.hhp.lecture.controller.dto.CreateApplyLectureResponse;
+import com.hhp.lecture.controller.dto.GetAppliedLecturesResponse;
 import com.hhp.lecture.controller.dto.GetLecturesResponse;
 import com.hhp.lecture.domain.Lecture;
 import com.hhp.lecture.domain.UserLecture;
@@ -35,6 +36,16 @@ public class LectureController {
         final List<Lecture> lectures = userLectureService.getLectures();
 
         return ApiResponse.isOk(GetLecturesResponse.from(lectures));
+    }
+
+    @GetMapping("/application/{userId}")
+    public ApiResponse<List<GetAppliedLecturesResponse>> getAppliedLectures(
+        @PathVariable final long userId
+    ) {
+        System.out.println("userId = " + userId);
+        final List<UserLecture> appliedLectures = userLectureService.getAppliedLectures(userId);
+
+        return ApiResponse.isOk(GetAppliedLecturesResponse.from(appliedLectures));
     }
 
 }
