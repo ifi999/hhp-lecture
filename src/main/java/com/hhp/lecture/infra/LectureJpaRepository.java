@@ -5,14 +5,12 @@ import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 public interface LectureJpaRepository extends JpaRepository<LectureEntity, Long> {
 
     @Modifying
-    @Transactional
     @Query("UPDATE LectureEntity l SET l.appliedCount = l.appliedCount + 1 WHERE l.id = :id")
     void incrementAppliedCount(@Param("id") long id);
 
