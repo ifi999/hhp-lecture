@@ -57,7 +57,7 @@ public class UserLectureServiceIntegrationTest {
 
         // then
         final LectureEntity 신청_후_강의 = lectureRepository.findById(강의_ID).orElseThrow();
-        assertThat(신청_후_강의.getId()).isEqualTo(유저_ID);
+        assertThat(신청_후_강의.getId()).isEqualTo(강의_ID);
         assertThat(신청_후_강의.getLectureName()).isEqualTo("토요일 특강");
         assertThat(신청_후_강의.getApplyDate()).isEqualTo("2024-04-20T13:20:00");
         assertThat(신청_후_강의.getOpenDate()).isEqualTo("2024-04-23T13:20:00");
