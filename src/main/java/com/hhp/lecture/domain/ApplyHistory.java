@@ -25,7 +25,7 @@ public class ApplyHistory {
     public ApplyHistory(final long id, final long userId, final long lectureId) {
         Assert.isTrue(id > 0, "The ID must be positive.");
         Assert.isTrue(userId > 0, "The User ID must be positive.");
-        Assert.isTrue(userId > 0, "The Lecture ID must be positive.");
+        Assert.isTrue(lectureId > 0, "The Lecture ID must be positive.");
 
         this.id = id;
         this.userId = userId;
