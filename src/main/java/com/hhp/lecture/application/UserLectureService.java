@@ -66,7 +66,7 @@ public class UserLectureService {
             throw new IllegalStateException("Invalid applied count: " + appliedCount + ". Lecture ID: " + lecture.getId());
         }
 
-        if (appliedCount - MAX_PARTICIPANTS > 0) {
+        if (appliedCount - MAX_PARTICIPANTS >= 0) {
             throw new IllegalStateException("The number of participants has already exceeded the maximum allowed limit of " + MAX_PARTICIPANTS + " participants.");
         }
     }
