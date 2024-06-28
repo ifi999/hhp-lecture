@@ -2,13 +2,11 @@ package com.hhp.lecture.infra.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@ToString
 @Getter
 @Entity
 @Table(name = "hhp_user")
