@@ -33,16 +33,11 @@ public class LectureJpaAdapter implements LectureRepository {
 
     @Override
     public void updateLecture(final Lecture lecture) {
-        lecture.incrementAppliedCount();
+        final long lectureId = lecture.getId();
+        final LectureEntity lectureEntity = lectureJpaRepository.findByIdWithLock(lectureId)
+            .orElseThrow(() -> new EntityNotFoundException("Lecture not found. Lecture ID: " + lectureId));
 
-        final LectureEntity lectureEntity = new LectureEntity(
-            lecture.getId(),
-            lecture.getLectureName(),
-            lecture.getApplyDate(),
-            lecture.getOpenDate(),
-            lecture.getAppliedCount()
-        );
-        lectureJpaRepository.save(lectureEntity);
+        lectureJpaRepository.incrementAppliedCount(lectureEntity.getId());
     }
 
     @Override
