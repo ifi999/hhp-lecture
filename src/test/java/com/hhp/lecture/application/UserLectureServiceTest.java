@@ -101,13 +101,11 @@ class UserLectureServiceTest {
             .willReturn(신청시간);
 
         // when
-        UserLecture 유저_강의 = userLectureService.applyLecture(특강신청_요청);
 
         // then
-        assertThat(유저_강의.getUserId()).isEqualTo(123L);
-        assertThat(유저_강의.getLectureId()).isEqualTo(456L);
-        assertThat(유저_강의.getLectureName()).isEqualTo("토요일 특강");
-        assertThat(유저_강의.getOpenDate()).isEqualTo("2024-04-23T13:20:00");
+        assertThatThrownBy(() -> userLectureService.applyLecture(특강신청_요청))
+            .isInstanceOf(IllegalStateException.class)
+            .hasMessage("The number of participants has already exceeded the maximum allowed limit of 30 participants.");
     }
 
     /**

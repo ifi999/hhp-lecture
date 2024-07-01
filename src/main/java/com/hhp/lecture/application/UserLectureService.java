@@ -38,10 +38,7 @@ public class UserLectureService {
         final Lecture lecture = lectureRepository.getLectureByLectureId(userLecture.getLectureId());
         final LocalDateTime now = dateTimeProvider.now();
 
-        final boolean isValidApplication = isApplyLectureValid(now, user, lecture);
-        if (!isValidApplication) {
-            return convertToUserLecture(user, lecture);
-        }
+        isApplyLectureValid(now, user, lecture);
 
         lectureRepository.updateLecture(lecture);
         applyHistoryRepository.saveApplyHistory(new ApplyHistory(user.getId(), lecture.getId()));
@@ -50,7 +47,7 @@ public class UserLectureService {
         return convertToUserLecture(user, lecture);
     }
 
-    private boolean isApplyLectureValid(
+    private void isApplyLectureValid(
         final LocalDateTime appliedDate,
         final User user,
         final Lecture lecture
@@ -70,10 +67,8 @@ public class UserLectureService {
         }
 
         if (appliedCount - MAX_PARTICIPANTS >= 0) {
-            return false;
+            throw new IllegalStateException("The number of participants has already exceeded the maximum allowed limit of " + MAX_PARTICIPANTS + " participants.");
         }
-
-        return true;
     }
 
     @Transactional(readOnly = true)
@@ -95,6 +90,7 @@ public class UserLectureService {
             .build();
     }
 
+    @Transactional(readOnly = true)
     public List<UserLecture> getAppliedLectures(final long userId) {
         final User user = userRepository.getUserByUserId(userId);
         final LocalDateTime now = dateTimeProvider.now();
