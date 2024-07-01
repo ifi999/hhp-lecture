@@ -172,7 +172,7 @@ class UserLectureServiceTest {
         // then
         assertThatThrownBy(() -> userLectureService.applyLecture(특강신청_요청))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Invalid application date: 2024-04-20T13:00. Application date must be before 2024-04-20T13:20.");
+            .hasMessage("Invalid application date: 2024-04-20T13:00. Application date must be after 2024-04-20T13:20.");
     }
 
     @Test

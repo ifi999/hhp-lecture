@@ -16,6 +16,8 @@ public class Lecture {
     private LocalDateTime openDate;
     private int appliedCount;
 
+    private static final int MAX_PARTICIPANTS = 30;
+
     public Lecture(
         final long id,
         final String lectureName,
@@ -34,6 +36,27 @@ public class Lecture {
         this.applyDate = applyDate;
         this.openDate = openDate;
         this.appliedCount = appliedCount;
+    }
+
+    public void validateLectureApplication(final LocalDateTime applicationDate) {
+        validateApplicationDate(applicationDate);
+        validateApplyCount();
+    }
+
+    private void validateApplicationDate(final LocalDateTime applicationDate) {
+        if (applicationDate.isBefore(this.applyDate)) {
+            throw new IllegalArgumentException("Invalid application date: " + applicationDate + ". Application date must be after " + this.applyDate + ".");
+        }
+    }
+
+    private void validateApplyCount() {
+        if (this.appliedCount < 0) {
+            throw new IllegalStateException("Invalid applied count: " + appliedCount + ". Lecture ID: " + this.id);
+        }
+
+        if (this.appliedCount - MAX_PARTICIPANTS >= 0) {
+            throw new IllegalStateException("The number of participants has already exceeded the maximum allowed limit of " + MAX_PARTICIPANTS + " participants.");
+        }
     }
 
 }

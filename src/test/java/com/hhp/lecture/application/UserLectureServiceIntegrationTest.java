@@ -94,7 +94,7 @@ public class UserLectureServiceIntegrationTest {
         // then
         assertThatThrownBy(() -> userLectureService.applyLecture(특강신청_중복요청))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Already applied lecture. User Id: " + 유저_ID + ", Lecture ID: " + 강의_ID + ".");
+            .hasMessage("Already applied lecture. Lecture ID: " + 강의_ID + ".");
     }
 
     /**
