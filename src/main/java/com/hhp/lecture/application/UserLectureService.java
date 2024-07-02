@@ -17,8 +17,6 @@ public class UserLectureService {
     private final UserLectureRepository userLectureRepository;
     private final DateTimeProvider dateTimeProvider;
 
-    private static final int MAX_PARTICIPANTS = 30;
-
     public UserLectureService(
         final LectureRepository lectureRepository,
         final UserRepository userRepository,
@@ -35,40 +33,17 @@ public class UserLectureService {
 
     public UserLecture applyLecture(final UserLecture userLecture) {
         final User user = userRepository.getUserByUserId(userLecture.getUserId());
-        final Lecture lecture = lectureRepository.getLectureByLectureId(userLecture.getLectureId());
-        final LocalDateTime now = dateTimeProvider.now();
+        final Lecture lecture = lectureRepository.getLectureByLectureIdWithLock(userLecture.getLectureId());
+        validateAlreadyApplied(user, lecture);
 
-        isApplyLectureValid(now, user, lecture);
+        final LocalDateTime now = dateTimeProvider.now();
+        lecture.validateLectureApplication(now);
 
         lectureRepository.updateLecture(lecture);
         applyHistoryRepository.saveApplyHistory(new ApplyHistory(user.getId(), lecture.getId()));
         userLectureRepository.saveUserLecture(user, lecture, now);
 
         return convertToUserLecture(user, lecture);
-    }
-
-    private void isApplyLectureValid(
-        final LocalDateTime appliedDate,
-        final User user,
-        final Lecture lecture
-    ) {
-        if (appliedDate.isBefore(lecture.getApplyDate())) {
-            throw new IllegalArgumentException("Invalid application date: " + appliedDate + ". Application date must be before " + lecture.getApplyDate() + ".");
-        }
-
-        final boolean isApplied = userLectureRepository.existsByUserAndLecture(user, lecture);
-        if (isApplied) {
-            throw new IllegalArgumentException("Already applied lecture. User Id: " + user.getId() + ", Lecture ID: " + lecture.getId() + ".");
-        }
-
-        final int appliedCount = lecture.getAppliedCount();
-        if (appliedCount < 0) {
-            throw new IllegalStateException("Invalid applied count: " + appliedCount + ". Lecture ID: " + lecture.getId());
-        }
-
-        if (appliedCount - MAX_PARTICIPANTS >= 0) {
-            throw new IllegalStateException("The number of participants has already exceeded the maximum allowed limit of " + MAX_PARTICIPANTS + " participants.");
-        }
     }
 
     @Transactional(readOnly = true)
@@ -99,4 +74,13 @@ public class UserLectureService {
 
         return lectures;
     }
+
+    private void validateAlreadyApplied(final User user, final Lecture lecture) {
+        final boolean isApplied = userLectureRepository.existsByUserAndLecture(user, lecture);
+
+        if (isApplied) {
+            throw new IllegalArgumentException("Already applied lecture. Lecture ID: " + lecture.getId() + ".");
+        }
+    }
+
 }

@@ -94,7 +94,7 @@ public class UserLectureServiceIntegrationTest {
         // then
         assertThatThrownBy(() -> userLectureService.applyLecture(특강신청_중복요청))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("Already applied lecture. User Id: " + 유저_ID + ", Lecture ID: " + 강의_ID + ".");
+            .hasMessage("Already applied lecture. Lecture ID: " + 강의_ID + ".");
     }
 
     /**
@@ -137,7 +137,7 @@ public class UserLectureServiceIntegrationTest {
     }
 
     @Test
-    void 특강_신청을_30명하면_참가자수는_30이다() throws Exception {
+    void 동시에_30명이_특강_신청할_경우_30명_모두_성공한다() throws Exception {
         // given
         final LectureEntity 강의 = lectureRepository.save(new LectureEntity(
             "토요일 특강",
@@ -160,7 +160,42 @@ public class UserLectureServiceIntegrationTest {
             });
         }
 
-        latch.await(60, TimeUnit.SECONDS);
+        latch.await(30, TimeUnit.SECONDS);
+
+        // when
+        final LectureEntity 신청_완료_강의 = lectureRepository.findById(강의.getId()).get();
+
+        // then
+        assertThat(신청_완료_강의.getAppliedCount()).isEqualTo(30);
+
+        executorService.shutdown();
+    }
+
+    @Test
+    void 동시에_40명이_특강_신청해도_30명만_성공한다() throws Exception {
+        // given
+        final LectureEntity 강의 = lectureRepository.save(new LectureEntity(
+            "토요일 특강",
+            LECTURE_APPLY_DATE,
+            LECTURE_OPEN_DATE,
+            0)
+        );
+
+        ExecutorService executorService = Executors.newFixedThreadPool(40);
+        CountDownLatch latch = new CountDownLatch(40);
+
+        for (int i = 0; i < 40; i++) {
+            executorService.submit(() -> {
+                try {
+                    final UserEntity 유저 = userRepository.save(new UserEntity("유저"));
+                    return userLectureService.applyLecture(new UserLecture(유저.getId(), 강의.getId()));
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+
+        latch.await(30, TimeUnit.SECONDS);
 
         // when
         final LectureEntity 신청_완료_강의 = lectureRepository.findById(강의.getId()).get();

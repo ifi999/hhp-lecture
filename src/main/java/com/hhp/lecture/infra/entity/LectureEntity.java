@@ -81,4 +81,7 @@ public class LectureEntity {
         return Objects.hash(id);
     }
 
+    public void incrementAppliedCount() {
+        this.appliedCount++;
+    }
 }
