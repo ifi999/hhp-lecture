@@ -10,12 +10,8 @@ import java.util.Optional;
 
 public interface LectureJpaRepository extends JpaRepository<LectureEntity, Long> {
 
-    @Modifying
-    @Query("UPDATE LectureEntity l SET l.appliedCount = l.appliedCount + 1 WHERE l.id = :id")
-    void incrementAppliedCount(@Param("id") long id);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "30000")})
+    @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "2000")})
     @Query("SELECT l FROM LectureEntity l WHERE l.id = :id")
     Optional<LectureEntity> findByIdWithLock(@Param("id") long id);
 

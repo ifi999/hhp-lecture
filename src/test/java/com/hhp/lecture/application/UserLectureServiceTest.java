@@ -55,7 +55,7 @@ class UserLectureServiceTest {
 
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
-        given(lectureRepository.getLectureByLectureId(강의_ID))
+        given(lectureRepository.getLectureByLectureIdWithLock(강의_ID))
             .willReturn(new Lecture(
                 456L,
                 "토요일 특강",
@@ -89,7 +89,7 @@ class UserLectureServiceTest {
 
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
-        given(lectureRepository.getLectureByLectureId(강의_ID))
+        given(lectureRepository.getLectureByLectureIdWithLock(강의_ID))
             .willReturn(new Lecture(
                 456L,
                 "토요일 특강",
@@ -121,7 +121,7 @@ class UserLectureServiceTest {
 
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
-        given(lectureRepository.getLectureByLectureId(강의_ID))
+        given(lectureRepository.getLectureByLectureIdWithLock(강의_ID))
             .willReturn(new Lecture(
                 456L,
                 "토요일 특강",
@@ -156,7 +156,7 @@ class UserLectureServiceTest {
 
         given(userRepository.getUserByUserId(유저_ID))
             .willReturn(new User(123L, "유저"));
-        given(lectureRepository.getLectureByLectureId(강의_ID))
+        given(lectureRepository.getLectureByLectureIdWithLock(강의_ID))
             .willReturn(new Lecture(
                 456L,
                 "토요일 특강",

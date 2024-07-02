@@ -18,8 +18,8 @@ public class LectureJpaAdapter implements LectureRepository {
     }
 
     @Override
-    public Lecture getLectureByLectureId(final long lectureId) {
-        final LectureEntity lectureEntity = lectureJpaRepository.findById(lectureId)
+    public Lecture getLectureByLectureIdWithLock(final long lectureId) {
+        final LectureEntity lectureEntity = lectureJpaRepository.findByIdWithLock(lectureId)
             .orElseThrow(() -> new EntityNotFoundException("Lecture not found. Lecture ID: " + lectureId));
 
         return new Lecture(
@@ -34,10 +34,10 @@ public class LectureJpaAdapter implements LectureRepository {
     @Override
     public void updateLecture(final Lecture lecture) {
         final long lectureId = lecture.getId();
-        final LectureEntity lectureEntity = lectureJpaRepository.findByIdWithLock(lectureId)
+        final LectureEntity lectureEntity = lectureJpaRepository.findById(lectureId)
             .orElseThrow(() -> new EntityNotFoundException("Lecture not found. Lecture ID: " + lectureId));
 
-        lectureJpaRepository.incrementAppliedCount(lectureEntity.getId());
+        lectureEntity.incrementAppliedCount();
     }
 
     @Override

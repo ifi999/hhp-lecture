@@ -33,7 +33,7 @@ public class UserLectureService {
 
     public UserLecture applyLecture(final UserLecture userLecture) {
         final User user = userRepository.getUserByUserId(userLecture.getUserId());
-        final Lecture lecture = lectureRepository.getLectureByLectureId(userLecture.getLectureId());
+        final Lecture lecture = lectureRepository.getLectureByLectureIdWithLock(userLecture.getLectureId());
         validateAlreadyApplied(user, lecture);
 
         final LocalDateTime now = dateTimeProvider.now();
